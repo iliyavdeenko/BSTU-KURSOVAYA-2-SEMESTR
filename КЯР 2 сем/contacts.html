@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Слово&Дело</title>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <img class="header-img" src="images/logo1.png" alt="Логотип Газеты">
+        
+        <button class="burger" aria-label="Открыть меню">
+            ☰
+        </button>
+    
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="news_page.html">Журналы</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2 id="contact">Контакты</h2>
+        
+        <section class="news-card">
+            <h3>Наши контактные данные</h3>
+            <p>Если у вас есть вопросы, предложения или вы хотите узнать больше о нас, свяжитесь с нами:</p>
+            <ul>
+                <li>
+                    <span>Email: <a href="mailto:contact@slovodelo.com" id="email-text">contact@slovodelo.com</a></span>
+                    <button class="copy-btn" onclick="copyToClipboard('email-text', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v16h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 18H8V7h11v16Z"/>
+                        </svg>
+                    </button>
+                </li>
+                <li>
+                    <span>Телефон: <a href="tel:+375296501790" id="phone-text">+375 29 650 17 90</a></span>
+                    <button class="copy-btn" onclick="copyToClipboard('phone-text', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v16h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 18H8V7h11v16Z"/>
+                        </svg>
+                    </button>
+                </li>
+                
+            </ul>
+        </section>
+
+        <section class="news-card">
+            <h3>Форма обратной связи</h3>
+            <form id="contact-form">
+                <label for="name">Ваше имя:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Ваш email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Сообщение:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+
+                <button type="submit">Отправить</button>
+                <p id="form-status"></p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Новая Газета. Все права защищены.</p>
+    </footer>
+
+    <script>
+    document.getElementById("contact-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const status = document.getElementById("form-status");
+
+    const formData = {
+        name: this.name.value,
+        email: this.email.value,
+        message: this.message.value
+    };
+
+    status.textContent = "Отправка...";
+
+    fetch("/submit", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(res => res.ok ? res.text() : Promise.reject(res))
+    .then(() => {
+        status.textContent = "Сообщение отправлено!";
+        this.reset();
+    })
+    .catch(() => {
+        status.textContent = "Ошибка при отправке.";
+    });
+});
+
+function copyToClipboard(elementId, button) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        button.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="lime" viewBox="0 0 24 24">
+                <path d="M20.285 6.709l-11.33 11.292-5.239-5.251 1.414-1.414 3.825 3.84 9.918-9.88z"/>
+            </svg>
+        `;
+        setTimeout(() => {
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v16h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 18H8V7h11v16Z"/>
+                </svg>
+            `;
+        }, 2000);
+    }).catch(err => {
+        console.error('Ошибка копирования: ', err);
+    });
+}
+
+
+    </script>
+</body>
+</html>
